@@ -3,18 +3,22 @@ export default function handler(req, res) {
   
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL ? 
-      `${process.env.SUPABASE_URL.substring(0, 20)}...` : 'MISSING',
+      `${process.env.SUPABASE_URL.substring(0, 30)}...` : '❌ MISSING',
     SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY ? 
-      'SET (hidden)' : 'MISSING',
-    NODE_ENV: process.env.NODE_ENV || 'not set',
-    VERCEL: process.env.VERCEL || 'not set'
+      '✅ SET (hidden for security)' : '❌ MISSING',
+    NODE_ENV: process.env.NODE_ENV || 'development',
+    VERCEL: process.env.VERCEL ? '✅ Deployed on Vercel' : '⚠️ Local',
+    NODE_VERSION: process.version
   };
   
   return res.json({
     status: 'debug',
     environment: env,
-    message: 'Environment variables check',
-    note: 'If SUPABASE_URL is missing, add it in Vercel Project Settings → Environment Variables',
+    instructions: {
+      missing_variables: 'Add SUPABASE_URL and SUPABASE_SERVICE_KEY in Vercel Project Settings → Environment Variables',
+      testing: 'Test with: GET /api/proxy/leads, POST /api/tilda/form',
+      tilda_integration: 'Set form action to: POST /api/tilda/form?table=your_table'
+    },
     timestamp: new Date().toISOString()
   });
 }
